@@ -1,0 +1,100 @@
+<div class="login">
+  <div class="login__contenedor">
+
+    <div class="login__tarjeta">
+
+      <div class="login__marca">
+        <app-logo [tamano]="30" />
+      </div>
+
+      <h1 class="login__titulo">Inventario</h1>
+      <p class="login__subtitulo">
+        Sistema de gestion de almacen<br />
+        Inicie sesion para continuar
+      </p>
+
+      <form class="login__formulario" (ngSubmit)="entrar()" novalidate>
+
+        @if (error()) {
+          <div class="login__error" role="alert">
+            <ng-icon name="lucideCircleAlert" size="18" />
+            <p>{{ error() }}</p>
+          </div>
+        }
+
+        <div>
+          <label class="login__label" for="usuario">Usuario</label>
+          <input
+            id="usuario"
+            name="usuario"
+            type="text"
+            class="login__input"
+            autocomplete="username"
+            placeholder="••••••••"
+            [ngModel]="usuario()"
+            (ngModelChange)="usuario.set($event)"
+            [disabled]="cargando()"
+          />
+        </div>
+
+        <div class="login__campo">
+          <label class="login__label" for="contrasena">Contrasena</label>
+          <input
+            id="contrasena"
+            name="contrasena"
+            [type]="mostrarContrasena() ? 'text' : 'password'"
+            class="login__input login__input--con-boton"
+            autocomplete="current-password"
+            placeholder="••••••••"
+            [ngModel]="contrasena()"
+            (ngModelChange)="contrasena.set($event)"
+            [disabled]="cargando()"
+          />
+          <button
+            type="button"
+            class="login__ver-contrasena"
+            (click)="mostrarContrasena.set(!mostrarContrasena())"
+            [attr.aria-label]="mostrarContrasena() ? 'Ocultar contrasena' : 'Mostrar contrasena'"
+          >
+            @if (mostrarContrasena()) {
+              <ng-icon name="lucideEyeOff" size="18" />
+            } @else {
+              <ng-icon name="lucideEye" size="18" />
+            }
+          </button>
+        </div>
+
+        <button type="submit" class="login__boton" [disabled]="cargando()">
+          @if (cargando()) {
+            <span class="spinner"></span>
+            Iniciando sesion...
+          } @else {
+            Iniciar sesion
+            <ng-icon name="lucideArrowRight" size="18" />
+          }
+        </button>
+      </form>
+
+      <div class="login__separador">o</div>
+
+      <p class="login__demo-titulo">Usa una cuenta de prueba</p>
+
+      <div class="login__cuentas">
+        @for (cuenta of cuentasDemo; track cuenta.usuario) {
+          <button type="button" class="login__cuenta"
+                  (click)="usarCuenta(cuenta.usuario, cuenta.contrasena)">
+            <span class="login__cuenta-izquierda">
+              <span class="login__avatar">{{ cuenta.usuario.charAt(0).toUpperCase() }}</span>
+              <span class="login__cuenta-nombre">{{ cuenta.usuario }}</span>
+            </span>
+            <span class="login__cuenta-rol">{{ cuenta.rol }}</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <p class="login__pie">
+      Sistema de Gestion de Inventario<br />
+    </p>
+  </div>
+</div>

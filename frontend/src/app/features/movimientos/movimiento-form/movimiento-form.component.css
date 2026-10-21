@@ -1,0 +1,194 @@
+
+.movform {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: var(--esp-6);
+}
+
+.movform__principal {
+  min-width: 0;
+}
+
+.movform__lateral {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-4);
+}
+
+.movform__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-5);
+}
+
+.movform__campo {
+  min-width: 0;
+}
+
+.movform__grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: var(--esp-4);
+}
+
+.movform__ayuda {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--gris-500);
+}
+
+/* Campo mientras se cargan los productos */
+.movform__cargando {
+  display: flex;
+  align-items: center;
+}
+
+/* Ficha del producto seleccionado */
+
+.movform__ficha {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--esp-3);
+  margin-top: var(--esp-3);
+  padding: var(--esp-3);
+  background-color: var(--gris-50);
+  border: 1px solid var(--gris-200);
+  border-radius: var(--radio);
+}
+
+.movform__ficha-dato {
+  min-width: 0;
+}
+
+.movform__ficha-etiqueta {
+  font-size: 12px;
+  color: var(--gris-500);
+}
+
+.movform__ficha-valor {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gris-800);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.movform__ficha-codigo {
+  font-family: ui-monospace, "Cascadia Mono", "Roboto Mono", Consolas, monospace;
+}
+
+/* Botones */
+
+.movform__acciones {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--esp-2);
+  padding-top: var(--esp-5);
+  border-top: 1px solid var(--gris-100);
+}
+
+/* Panel informativo */
+
+.movform__pasos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  margin-top: var(--esp-3);
+  list-style: none;
+}
+
+.movform__paso {
+  display: flex;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--gris-600);
+}
+
+.movform__paso-numero {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #047857;
+  background-color: var(--exito-fondo);
+  border-radius: 50%;
+}
+
+/* Panel del ultimo movimiento */
+
+.ultimo {
+  padding: var(--esp-5);
+  border: 1px solid var(--exito-borde);
+  border-radius: var(--radio-lg);
+}
+
+.ultimo--entrada {
+  background-color: var(--exito-fondo);
+}
+
+.ultimo--salida {
+  background-color: var(--naranja-fondo);
+  border-color: var(--naranja-borde);
+}
+
+.ultimo--ajuste {
+  background-color: var(--info-fondo);
+  border-color: var(--info-borde);
+}
+
+.ultimo__titulo {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gris-800);
+}
+
+.ultimo__datos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--esp-3);
+  margin-top: var(--esp-3);
+}
+
+.ultimo__dato-etiqueta {
+  font-size: 12px;
+  color: var(--gris-600);
+}
+
+.ultimo__dato-valor {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gris-900);
+}
+
+/* Responsive */
+
+@media (min-width: 640px) {
+  .movform__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .movform__acciones {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  .movform__ficha {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .ultimo__datos {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .movform {
+    grid-template-columns: 2fr 1fr;
+  }
+}

@@ -1,0 +1,47 @@
+@if (totalPaginas > 0) {
+  <div class="pag">
+    <p class="pag__info">
+      Mostrando <strong>{{ desde }}</strong> a <strong>{{ hasta }}</strong> de
+      <strong>{{ totalRegistros }}</strong> registros
+    </p>
+
+    <div class="pag__controles">
+      <button
+        type="button"
+        class="btn btn--secundario btn--pequeno"
+        [disabled]="!tieneAnterior"
+        (click)="irA(pagina - 1)"
+      >
+        <ng-icon name="lucideChevronLeft" size="16" />
+        Anterior
+      </button>
+
+      <div class="pag__lista ocultar-movil">
+        @for (p of paginas; track p) {
+          <button
+            type="button"
+            class="pag__pagina"
+            [class.pag__pagina--activa]="p === pagina"
+            (click)="irA(p)"
+          >
+            {{ p }}
+          </button>
+        }
+      </div>
+
+      <span class="pag__resumen solo-movil">
+        Pag. {{ pagina }} de {{ totalPaginas }}
+      </span>
+
+      <button
+        type="button"
+        class="btn btn--secundario btn--pequeno"
+        [disabled]="!tieneSiguiente"
+        (click)="irA(pagina + 1)"
+      >
+        Siguiente
+        <ng-icon name="lucideChevronRight" size="16" />
+      </button>
+    </div>
+  </div>
+}

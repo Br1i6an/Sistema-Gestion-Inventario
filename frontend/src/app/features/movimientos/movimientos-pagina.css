@@ -1,0 +1,17 @@
+
+.movpag {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-5);
+}
+
+.movpag__titulo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gris-800);
+}
+
+.movpag__descripcion {
+  font-size: 14px;
+  color: var(--gris-500);
+}

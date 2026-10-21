@@ -1,0 +1,94 @@
+<div class="shell">
+
+  @if (menuAbierto()) {
+    <div class="shell__velo" (click)="cerrarMenu()" aria-hidden="true"></div>
+  }
+
+  <aside
+    class="shell__lateral"
+    [class.shell__lateral--visible]="menuAbierto()"
+    [class.shell__lateral--colapsado]="colapsado()"
+  >
+    <div class="shell__marca">
+      <div class="shell__marca-icono">
+        <app-logo [tamano]="20" />
+      </div>
+      <div class="shell__marca-texto">
+        <p class="shell__marca-nombre">Inventario</p>
+        <p class="shell__marca-descripcion">Gestion de almacen</p>
+      </div>
+    </div>
+
+    <nav class="shell__nav">
+      @for (item of menuVisible(); track item.ruta) {
+        <a
+          [routerLink]="item.ruta"
+          routerLinkActive="shell__enlace--activo"
+          [routerLinkActiveOptions]="{ exact: item.ruta === '/dashboard' }"
+          (click)="cerrarMenu()"
+          class="shell__enlace"
+          [attr.title]="colapsado() ? item.etiqueta : null"
+        >
+          <ng-icon [name]="item.icono" size="20" />
+          <span>{{ item.etiqueta }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="shell__usuario">
+      <div class="shell__usuario-fila">
+        <div class="shell__avatar">{{ usuario()?.nombreCompleto?.charAt(0)?.toUpperCase() || '?' }}</div>
+        <div class="shell__usuario-datos">
+          <p class="shell__usuario-nombre">{{ usuario()?.nombreCompleto }}</p>
+          <p class="shell__usuario-rol">{{ usuario()?.rol }}</p>
+        </div>
+        <button
+          type="button"
+          class="shell__salir"
+          (click)="cerrarSesion()"
+          title="Cerrar sesion"
+          aria-label="Cerrar sesion"
+        >
+          <ng-icon name="lucideLogOut" size="20" />
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="shell__contenido" [class.shell__contenido--colapsado]="colapsado()">
+
+    <header class="shell__cabecera">
+      <button
+        type="button"
+        class="shell__boton shell__boton-menu"
+        (click)="alternarMenu()"
+        aria-label="Abrir menu"
+      >
+        <ng-icon name="lucideMenu" size="24" />
+      </button>
+
+      <button
+        type="button"
+        class="shell__boton shell__boton-colapsar"
+        (click)="alternarColapso()"
+        [attr.aria-label]="textoColapso"
+        [attr.aria-expanded]="!colapsado()"
+        [title]="textoColapso"
+      >
+        <ng-icon [name]="colapsado() ? 'lucidePanelLeftOpen' : 'lucidePanelLeftClose'" size="20" />
+      </button>
+
+      <h1 class="shell__titulo">Sistema de Gestion de Inventario</h1>
+
+      <span class="shell__chip">{{ usuario()?.username }}</span>
+    </header>
+
+    <main class="shell__principal">
+      <router-outlet />
+    </main>
+
+    <footer class="shell__pie">
+      Sistema de Gestion de Inventario
+    </footer>
+  </div>
+</div>

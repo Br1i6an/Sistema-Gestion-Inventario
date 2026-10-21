@@ -1,0 +1,21 @@
+/* =============================================================================
+ *  Configuracion de TypeScript exclusiva para las pruebas unitarias.
+ *  Se extiende de tsconfig.app.json para heredar el compilador de Angular.
+ * ============================================================================= */
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/spec",
+    "types": ["jest", "node"],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "target": "ES2022",
+    "useDefineForClassFields": false,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": false
+  },
+  "include": ["src/**/*.spec.ts", "src/**/*.d.ts", "setup-jest.ts"]
+}

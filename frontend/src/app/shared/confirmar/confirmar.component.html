@@ -1,0 +1,37 @@
+@if (visible) {
+  <div class="conf">
+    <div class="conf__velo" (click)="cancelar()"></div>
+
+    <div class="conf__caja" role="dialog" aria-modal="true">
+      <div class="conf__encabezado">
+        <div class="conf__icono" [class.conf__icono--peligro]="peligroso" [class.conf__icono--normal]="!peligroso">
+          @if (peligroso) {
+            <ng-icon name="lucideTriangleAlert" size="24" />
+          } @else {
+            <ng-icon name="lucideInfo" size="24" />
+          }
+        </div>
+
+        <div class="conf__datos">
+          <h3 class="conf__titulo">{{ titulo }}</h3>
+          <p class="conf__mensaje">{{ mensaje }}</p>
+        </div>
+      </div>
+
+      <div class="conf__acciones">
+        <button type="button" class="btn btn--secundario" (click)="cancelar()">
+          {{ textoCancelar }}
+        </button>
+        <button
+          type="button"
+          class="btn"
+          [class.btn--peligro]="peligroso"
+          [class.btn--primario]="!peligroso"
+          (click)="confirmar()"
+        >
+          {{ textoConfirmar }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

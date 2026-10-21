@@ -1,0 +1,201 @@
+<div class="inv">
+  <div>
+    <h2 class="inv__titulo">Inventario actual</h2>
+    <p class="inv__descripcion">Estado de existencias de todos los productos</p>
+  </div>
+
+  <div class="filtros">
+    <div class="filtros__campo">
+      <label class="label" for="busqueda">Buscar</label>
+      <input
+        id="busqueda"
+        type="search"
+        class="input"
+        placeholder="Nombre o codigo del producto..."
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+        (keyup.enter)="aplicarFiltros()"
+      />
+    </div>
+
+    <div class="filtros__campo">
+      <label class="label" for="categoria">Categoria</label>
+      <select
+        id="categoria"
+        class="input select"
+        [ngModel]="categoriaId()"
+        (ngModelChange)="categoriaId.set($event); aplicarFiltros()"
+      >
+        <option [ngValue]="null">Todas las categorias</option>
+        @for (c of categorias(); track c.id) {
+          <option [ngValue]="c.id">{{ c.nombre }} ({{ c.totalProductos }})</option>
+        }
+      </select>
+    </div>
+
+    <div class="filtros__campo">
+      <label class="label" for="orden">Ordenar por</label>
+      <select
+        id="orden"
+        class="input select"
+        [ngModel]="ordenarPor()"
+        (ngModelChange)="ordenarPor.set($event); aplicarFiltros()"
+      >
+        <option value="nombre">Nombre</option>
+        <option value="codigo">Codigo</option>
+        <option value="stock">Stock</option>
+        <option value="precio">Precio</option>
+        <option value="valor">Valor total</option>
+        <option value="categoria">Categoria</option>
+      </select>
+    </div>
+
+    <div class="filtros__acciones">
+      <div class="filtros__opciones">
+        <label class="filtros__check">
+          <input
+            type="checkbox"
+            [ngModel]="soloBajoStock()"
+            (ngModelChange)="soloBajoStock.set($event); aplicarFiltros()"
+          />
+          Solo stock bajo o agotado
+        </label>
+
+        <label class="filtros__check">
+          <input
+            type="checkbox"
+            [ngModel]="soloActivos()"
+            (ngModelChange)="soloActivos.set($event); aplicarFiltros()"
+          />
+          Solo productos activos
+        </label>
+      </div>
+
+      <div class="filtros__botones">
+        <button type="button" class="btn btn--secundario" (click)="limpiarFiltros()">
+          <ng-icon name="lucideX" size="16" />
+          Limpiar
+        </button>
+        <button type="button" class="btn btn--primario" (click)="aplicarFiltros()" [disabled]="cargando()">
+          <ng-icon name="lucideSearch" size="16" />
+          Buscar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    @if (cargando()) {
+      <div class="centrado min-alto-72">
+        <span class="spinner spinner--oscuro"></span>
+      </div>
+    } @else if (productos().length === 0) {
+      <div class="vacio">
+        <ng-icon class="vacio__icono vacio__icono--gris" name="lucideBoxes" size="40" strokeWidth="1.5" />
+        <p class="vacio__titulo">No se encontraron productos</p>
+        <p class="vacio__texto">Pruebe ajustando los filtros de la busqueda.</p>
+      </div>
+    } @else {
+      <div class="tabla-envoltura ocultar-movil">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>
+                <button type="button" class="tabla__orden" (click)="ordenar('codigo')">
+                  Codigo <span class="tabla__orden-flecha">{{ flechaOrden('codigo') }}</span>
+                </button>
+              </th>
+              <th>
+                <button type="button" class="tabla__orden" (click)="ordenar('nombre')">
+                  Producto <span class="tabla__orden-flecha">{{ flechaOrden('nombre') }}</span>
+                </button>
+              </th>
+              <th>
+                <button type="button" class="tabla__orden" (click)="ordenar('categoria')">
+                  Categoria <span class="tabla__orden-flecha">{{ flechaOrden('categoria') }}</span>
+                </button>
+              </th>
+              <th class="texto-derecha">
+                <button type="button" class="tabla__orden" (click)="ordenar('precio')">
+                  Precio <span class="tabla__orden-flecha">{{ flechaOrden('precio') }}</span>
+                </button>
+              </th>
+              <th class="texto-derecha">
+                <button type="button" class="tabla__orden" (click)="ordenar('stock')">
+                  Stock <span class="tabla__orden-flecha">{{ flechaOrden('stock') }}</span>
+                </button>
+              </th>
+              <th class="texto-derecha">
+                <button type="button" class="tabla__orden" (click)="ordenar('valor')">
+                  Valor total <span class="tabla__orden-flecha">{{ flechaOrden('valor') }}</span>
+                </button>
+              </th>
+              <th class="texto-centro">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of productos(); track p.id) {
+              <tr>
+                <td class="tabla__codigo">{{ p.codigo }}</td>
+                <td>
+                  <p class="tabla__nombre">{{ p.nombre }}</p>
+                  @if (p.descripcion) {
+                    <p class="tabla__descripcion">{{ p.descripcion }}</p>
+                  }
+                </td>
+                <td>{{ p.categoriaNombre }}</td>
+                <td class="texto-derecha numerico">{{ formatearMoneda(p.precioUnitario) }}</td>
+                <td class="texto-derecha numerico">
+                  <strong>{{ p.stockActual }}</strong>
+                  <span class="tabla__stock-minimo">/ min {{ p.stockMinimo }}</span>
+                </td>
+                <td class="texto-derecha numerico texto-pesado">{{ formatearMoneda(p.valorTotal) }}</td>
+                <td class="texto-centro">
+                  <span [class]="claseEstado(p.estadoStock)">{{ p.estadoStock }}</span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="inv__tarjetas solo-movil">
+        @for (p of productos(); track p.id) {
+          <div class="inv__tarjeta">
+            <div class="inv__tarjeta-encabezado">
+              <div>
+                <p class="inv__tarjeta-codigo">{{ p.codigo }}</p>
+                <p class="inv__tarjeta-nombre">{{ p.nombre }}</p>
+                <p class="inv__tarjeta-categoria">{{ p.categoriaNombre }}</p>
+              </div>
+              <span [class]="claseEstado(p.estadoStock)">{{ p.estadoStock }}</span>
+            </div>
+
+            <div class="inv__tarjeta-datos">
+              <div class="inv__dato">
+                <p class="inv__dato-etiqueta">Stock</p>
+                <p class="inv__dato-valor numerico">{{ p.stockActual }}</p>
+              </div>
+              <div class="inv__dato">
+                <p class="inv__dato-etiqueta">Precio</p>
+                <p class="inv__dato-valor numerico">{{ formatearMoneda(p.precioUnitario) }}</p>
+              </div>
+              <div class="inv__dato">
+                <p class="inv__dato-etiqueta">Total</p>
+                <p class="inv__dato-valor numerico">{{ formatearMoneda(p.valorTotal) }}</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <app-paginacion
+        [pagina]="pagina()"
+        [totalPaginas]="totalPaginas()"
+        [totalRegistros]="totalRegistros()"
+        [tamanoPagina]="tamanoPagina"
+        (cambioPagina)="cambiarPagina($event)"
+      />
+    }
+  </div>
+</div>

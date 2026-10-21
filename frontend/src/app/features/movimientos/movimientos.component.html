@@ -1,0 +1,141 @@
+<div class="mov">
+  <div>
+    <h2 class="mov__titulo">Historial de movimientos</h2>
+    <p class="mov__descripcion">Bitacora completa de entradas, salidas y ajustes</p>
+  </div>
+
+  <div class="filtros">
+    <div class="filtros__campo">
+      <label class="label" for="tipo">Tipo de movimiento</label>
+      <select
+        id="tipo"
+        class="input select"
+        [ngModel]="tipo()"
+        (ngModelChange)="tipo.set($event); aplicarFiltros()"
+      >
+        <option [ngValue]="null">Todos los tipos</option>
+        @for (t of tiposDisponibles; track t.valor) {
+          <option [ngValue]="t.valor">{{ t.etiqueta }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filtros__campo">
+      <label class="label" for="busqueda">Buscar</label>
+      <input
+        id="busqueda"
+        type="search"
+        class="input"
+        placeholder="Producto, codigo o referencia..."
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+        (keyup.enter)="aplicarFiltros()"
+      />
+    </div>
+
+    <div class="filtros__campo">
+      <label class="label" for="desde">Desde</label>
+      <input
+        id="desde"
+        type="date"
+        class="input"
+        [ngModel]="desde()"
+        (ngModelChange)="desde.set($event)"
+      />
+    </div>
+
+    <div class="filtros__campo">
+      <label class="label" for="hasta">Hasta</label>
+      <input
+        id="hasta"
+        type="date"
+        class="input"
+        [ngModel]="hasta()"
+        (ngModelChange)="hasta.set($event)"
+      />
+    </div>
+
+    <div class="filtros__acciones">
+      <div></div>
+      <div class="filtros__botones">
+        <button type="button" class="btn btn--secundario" (click)="limpiarFiltros()">
+          <ng-icon name="lucideX" size="16" />
+          Limpiar
+        </button>
+        <button type="button" class="btn btn--primario" (click)="aplicarFiltros()" [disabled]="cargando()">
+          <ng-icon name="lucideSearch" size="16" />
+          Filtrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    @if (cargando()) {
+      <div class="centrado min-alto-72">
+        <span class="spinner spinner--oscuro"></span>
+      </div>
+    } @else if (movimientos().length === 0) {
+      <div class="vacio">
+        <ng-icon class="vacio__icono vacio__icono--gris" name="lucideArrowRightLeft" size="40" strokeWidth="1.5" />
+        <p class="vacio__titulo">No hay movimientos registrados</p>
+        <p class="vacio__texto">Pruebe con otros filtros de busqueda.</p>
+      </div>
+    } @else {
+      <div class="tabla-envoltura">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Producto</th>
+              <th class="texto-centro">Tipo</th>
+              <th class="texto-derecha">Cantidad</th>
+              <th class="texto-derecha">Stock anterior</th>
+              <th class="texto-derecha">Stock resultante</th>
+              <th class="texto-derecha">Valor</th>
+              <th>Motivo</th>
+              <th>Usuario</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (m of movimientos(); track m.id) {
+              <tr>
+                <td class="mov__fecha">{{ formatearFecha(m.creadoEn) }}</td>
+                <td>
+                  <p class="mov__producto">{{ m.productoNombre }}</p>
+                  <p class="mov__codigo">{{ m.productoCodigo }}</p>
+                </td>
+                <td class="texto-centro">
+                  <span [class]="claseTipo(m.tipo)">{{ m.tipoDescripcion }}</span>
+                </td>
+                <td class="texto-derecha texto-pesado numerico">
+                  {{ signo(m.tipo) }}{{ m.cantidad }}
+                </td>
+                <td class="texto-derecha numerico texto-gris-500">{{ m.stockAnterior }}</td>
+                <td class="texto-derecha texto-pesado numerico">{{ m.stockResultante }}</td>
+                <td class="texto-derecha numerico">{{ formatearMoneda(m.valorTotal) }}</td>
+                <td>
+                  <div class="mov__motivo" [title]="m.motivo || ''">
+                    {{ m.motivo || '-' }}
+                    @if (m.referencia) {
+                      <span class="mov__referencia">{{ m.referencia }}</span>
+                    }
+                  </div>
+                </td>
+                <td class="mov__usuario">{{ m.usuarioNombre || 'Sistema' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <app-paginacion
+        [pagina]="pagina()"
+        [totalPaginas]="totalPaginas()"
+        [totalRegistros]="totalRegistros()"
+        [tamanoPagina]="tamanoPagina"
+        (cambioPagina)="cambiarPagina($event)"
+      />
+    }
+  </div>
+</div>

@@ -1,0 +1,208 @@
+<div class="dash">
+  <div class="dash__encabezado">
+    <div>
+      <h2 class="dash__titulo">Dashboard</h2>
+      <p class="dash__descripcion">Panorama general del inventario de almacen</p>
+    </div>
+    <button type="button" class="btn btn--secundario" (click)="cargar()" [disabled]="cargando()">
+      <ng-icon name="lucideRefreshCw" size="16" />
+      Actualizar
+    </button>
+  </div>
+
+  @if (cargando()) {
+    <div class="centrado min-alto-72">
+      <span class="spinner spinner--oscuro"></span>
+    </div>
+  } @else {
+    <div class="dash__kpis">
+      <div class="kpi">
+        <div class="kpi__encabezado">
+          <div>
+            <p class="kpi__titulo">Productos activos</p>
+            <p class="kpi__valor">{{ formatearNumero(resumen()?.totalProductos ?? 0) }}</p>
+          </div>
+          <div class="kpi__icono kpi__icono--marca">
+            <ng-icon name="lucidePackage" size="24" />
+          </div>
+        </div>
+        <p class="kpi__detalle">{{ formatearNumero(resumen()?.totalUnidades ?? 0) }} unidades en stock</p>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi__encabezado">
+          <div>
+            <p class="kpi__titulo">Valor del inventario</p>
+            <p class="kpi__valor">{{ formatearMoneda(resumen()?.valorInventario ?? 0) }}</p>
+          </div>
+          <div class="kpi__icono kpi__icono--exito">
+            <ng-icon name="lucideCircleDollarSign" size="24" />
+          </div>
+        </div>
+        <p class="kpi__detalle">Suma de stock x precio unitario</p>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi__encabezado">
+          <div>
+            <p class="kpi__titulo">Requieren atencion</p>
+            <p class="kpi__valor">{{ (resumen()?.productosAgotados ?? 0) + (resumen()?.productosStockBajo ?? 0) }}</p>
+          </div>
+          <div class="kpi__icono kpi__icono--alerta">
+            <ng-icon name="lucideTriangleAlert" size="24" />
+          </div>
+        </div>
+        <p class="kpi__detalle">
+          <strong class="texto-rojo-600">{{ resumen()?.productosAgotados ?? 0 }}</strong> agotados
+          &middot;
+          <strong class="texto-amarillo-600">{{ resumen()?.productosStockBajo ?? 0 }}</strong> por debajo del minimo
+        </p>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi__encabezado">
+          <div>
+            <p class="kpi__titulo">Movimientos del mes</p>
+            <p class="kpi__valor">{{ (resumen()?.entradasUltimoMes ?? 0) + (resumen()?.salidasUltimoMes ?? 0) }}</p>
+          </div>
+          <div class="kpi__icono kpi__icono--info">
+            <ng-icon name="lucideArrowRightLeft" size="24" />
+          </div>
+        </div>
+        <p class="kpi__detalle">
+          <strong class="texto-verde-600">{{ resumen()?.entradasUltimoMes ?? 0 }}</strong> entradas
+          &middot;
+          <strong class="texto-naranja-600">{{ resumen()?.salidasUltimoMes ?? 0 }}</strong> salidas
+        </p>
+      </div>
+    </div>
+
+    <div class="dash__acciones">
+      <a routerLink="/entradas" class="accion">
+        <div class="accion__icono accion__icono--entrada">
+          <ng-icon name="lucideArrowDownToLine" size="24" />
+        </div>
+        <div>
+          <p class="accion__titulo">Registrar entrada</p>
+          <p class="accion__descripcion">Ingreso de mercaderia al almacen</p>
+        </div>
+      </a>
+
+      <a routerLink="/salidas" class="accion">
+        <div class="accion__icono accion__icono--salida">
+          <ng-icon name="lucideArrowUpFromLine" size="24" />
+        </div>
+        <div>
+          <p class="accion__titulo">Registrar salida</p>
+          <p class="accion__descripcion">Despacho de mercaderia a destino</p>
+        </div>
+      </a>
+
+      <a routerLink="/inventario" class="accion">
+        <div class="accion__icono accion__icono--consulta">
+          <ng-icon name="lucideBoxes" size="24" />
+        </div>
+        <div>
+          <p class="accion__titulo">Consultar inventario</p>
+          <p class="accion__descripcion">Estado actual de existencias</p>
+        </div>
+      </a>
+    </div>
+
+    <div class="dash__paneles">
+      <div class="tarjeta">
+        <div class="tarjeta__encabezado">
+          <h3 class="tarjeta__titulo">Productos que requieren atencion</h3>
+          <a routerLink="/inventario" [queryParams]="{ soloBajoStock: true }" class="dash__enlace-ver">
+            Ver todos
+          </a>
+        </div>
+
+        @if (productosCriticos().length === 0) {
+          <div class="vacio">
+            <ng-icon class="vacio__icono" name="lucideCheck" size="40" strokeWidth="1.5" />
+            <p class="vacio__titulo">Todo en orden</p>
+            <p class="vacio__texto">No hay productos agotados ni por debajo del minimo.</p>
+          </div>
+        } @else {
+          <div class="tabla-envoltura">
+            <table class="tabla">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th class="texto-derecha">Stock</th>
+                  <th class="texto-derecha">Minimo</th>
+                  <th class="texto-centro">Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (p of productosCriticos(); track p.id) {
+                  <tr>
+                    <td>
+                      <p class="texto-pesado texto-gris-800">{{ p.nombre }}</p>
+                      <p class="texto-mono texto-xs texto-gris-500">{{ p.codigo }}</p>
+                    </td>
+                    <td class="texto-derecha texto-pesado numerico">{{ p.stockActual }}</td>
+                    <td class="texto-derecha numerico texto-gris-500">{{ p.stockMinimo }}</td>
+                    <td class="texto-centro">
+                      <span [class]="claseEstado(p.estadoStock)">{{ p.estadoStock }}</span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+
+      <div class="tarjeta">
+        <div class="tarjeta__encabezado">
+          <h3 class="tarjeta__titulo">Actividad reciente</h3>
+          <a routerLink="/movimientos" class="dash__enlace-ver">Ver historial</a>
+        </div>
+
+        @if (ultimosMovimientos().length === 0) {
+          <div class="vacio">
+            <ng-icon class="vacio__icono vacio__icono--gris" name="lucideArrowRightLeft" size="40" strokeWidth="1.5" />
+            <p class="vacio__texto">Todavia no hay movimientos registrados.</p>
+          </div>
+        } @else {
+          <div class="actividad">
+            @for (m of ultimosMovimientos(); track m.id) {
+              <div class="actividad__item">
+                <div class="actividad__icono" [class.actividad__icono--entrada]="m.tipo === 'Entrada'"
+                     [class.actividad__icono--salida]="m.tipo === 'Salida'"
+                     [class.actividad__icono--ajuste]="m.tipo !== 'Entrada' && m.tipo !== 'Salida'">
+                  @if (m.tipo === 'Entrada') {
+                    <ng-icon name="lucideTrendingUp" size="16" strokeWidth="2.5" />
+                  } @else if (m.tipo === 'Salida') {
+                    <ng-icon name="lucideTrendingDown" size="16" strokeWidth="2.5" />
+                  } @else {
+                    <ng-icon name="lucideSlidersHorizontal" size="16" strokeWidth="2" />
+                  }
+                </div>
+
+                <div class="actividad__datos">
+                  <p class="actividad__titulo">{{ m.productoNombre }}</p>
+                  <p class="actividad__detalle">
+                    {{ m.tipoDescripcion }} &middot; {{ m.cantidad }} unidad(es)
+                    @if (m.motivo) {
+                      &middot; {{ m.motivo }}
+                    }
+                  </p>
+                </div>
+
+                <div class="actividad__stock">
+                  <p class="actividad__stock-valor">
+                    {{ m.stockAnterior }} &rarr; {{ m.stockResultante }}
+                  </p>
+                  <p class="actividad__stock-fecha">{{ formatearFecha(m.creadoEn) }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

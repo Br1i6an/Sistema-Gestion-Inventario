@@ -1,0 +1,261 @@
+<div class="movform">
+  <!-- Formulario -->
+  <div class="movform__principal">
+    <div class="tarjeta">
+      <div class="tarjeta__encabezado">
+        <div>
+          <h3 class="tarjeta__titulo">{{ titulo() }} de inventario</h3>
+          <p class="movform__ayuda">{{ descripcion() }}</p>
+        </div>
+      </div>
+
+      <div class="tarjeta__cuerpo">
+        <div class="movform__form">
+
+          <!-- Producto -->
+          <div class="movform__campo">
+            @if (cargando()) {
+              <div class="input movform__cargando">
+                <span class="spinner spinner--oscuro"></span>
+              </div>
+            } @else {
+              <label class="label" for="filtroProducto">Buscar producto</label>
+              <input
+                id="filtroProducto"
+                name="filtroProducto"
+                type="text"
+                class="input"
+                placeholder="Filtre por nombre o codigo..."
+                [ngModel]="busquedaProducto()"
+                (ngModelChange)="busquedaProducto.set($event)"
+              />
+
+              <label class="label mt-4" for="producto">
+                Producto <span class="texto-rojo-600">*</span>
+              </label>
+              <select
+                id="producto"
+                name="producto"
+                class="input select"
+                [class.input--error]="errores()['productoId']"
+                [ngModel]="productoId()"
+                (ngModelChange)="onProductoChange($event)"
+              >
+                <option [ngValue]="null">Seleccione un producto...</option>
+                @for (p of productosFiltrados(); track p.id) {
+                  <option [ngValue]="p.id">
+                    {{ p.codigo }} - {{ p.nombre }} (stock: {{ p.stockActual }})
+                  </option>
+                }
+              </select>
+
+              @if (errores()['productoId']) {
+                <p class="campo-error">
+                  <ng-icon name="lucideCircleAlert" size="14" />
+                  {{ errores()['productoId'] }}
+                </p>
+              }
+            }
+
+            <!-- Ficha del producto seleccionado -->
+            @if (productoSeleccionado(); as p) {
+              <div class="movform__ficha">
+                <div class="movform__ficha-dato">
+                  <p class="movform__ficha-etiqueta">Codigo</p>
+                  <p class="movform__ficha-valor movform__ficha-codigo">{{ p.codigo }}</p>
+                </div>
+                <div class="movform__ficha-dato">
+                  <p class="movform__ficha-etiqueta">Stock actual</p>
+                  <p class="movform__ficha-valor">{{ p.stockActual }}</p>
+                </div>
+                <div class="movform__ficha-dato">
+                  <p class="movform__ficha-etiqueta">Stock minimo</p>
+                  <p class="movform__ficha-valor">{{ p.stockMinimo }}</p>
+                </div>
+                <div class="movform__ficha-dato">
+                  <p class="movform__ficha-etiqueta">Precio unit.</p>
+                  <p class="movform__ficha-valor">{{ p.precioUnitario | number: '1.2-2' }}</p>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Cantidad / Stock final -->
+          @if (modo === 'ajuste') {
+            <div class="movform__campo">
+              <label class="label" for="stockFinal">
+                Stock final contado <span class="texto-rojo-600">*</span>
+              </label>
+              <input
+                id="stockFinal"
+                type="number"
+                min="0"
+                class="input"
+                [class.input--error]="errores()['stockFinal']"
+                placeholder="0"
+                [ngModel]="stockFinal()"
+                (ngModelChange)="stockFinal.set($event)"
+              />
+              <p class="movform__ayuda">
+                Ingrese la cantidad de unidades halladas fisicamente. La diferencia respecto al
+                stock actual se registrara como ajuste.
+              </p>
+              @if (errores()['stockFinal']) {
+                <p class="campo-error">{{ errores()['stockFinal'] }}</p>
+              }
+            </div>
+          } @else {
+            <div class="movform__grid">
+              <div class="movform__campo">
+                <label class="label" for="cantidad">
+                  Cantidad <span class="texto-rojo-600">*</span>
+                </label>
+                <input
+                  id="cantidad"
+                  type="number"
+                  min="1"
+                  class="input"
+                  [class.input--error]="errores()['cantidad']"
+                  placeholder="0"
+                  [ngModel]="cantidad()"
+                  (ngModelChange)="cantidad.set($event)"
+                />
+                @if (errores()['cantidad']) {
+                  <p class="campo-error">{{ errores()['cantidad'] }}</p>
+                }
+              </div>
+
+              @if (modo === 'entrada') {
+                <div class="movform__campo">
+                  <label class="label" for="precio">Precio unitario</label>
+                  <input
+                    id="precio"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    class="input"
+                    placeholder="0.00"
+                    [ngModel]="precioUnitario()"
+                    (ngModelChange)="precioUnitario.set($event)"
+                  />
+                  <p class="movform__ayuda">
+                    Si se omite, se usa el precio registrado del producto.
+                  </p>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Motivo y referencia -->
+          <div class="movform__grid">
+            <div class="movform__campo">
+              <label class="label" for="motivo">Motivo</label>
+              <input
+                id="motivo"
+                type="text"
+                maxlength="255"
+                class="input"
+                placeholder="Ej. Compra a proveedor"
+                [ngModel]="motivo()"
+                (ngModelChange)="motivo.set($event)"
+              />
+            </div>
+
+            <div class="movform__campo">
+              <label class="label" for="referencia">Referencia</label>
+              <input
+                id="referencia"
+                type="text"
+                maxlength="100"
+                class="input"
+                placeholder="Ej. FAC-2026-001"
+                [ngModel]="referencia()"
+                (ngModelChange)="referencia.set($event)"
+              />
+            </div>
+          </div>
+
+          <!-- Botones -->
+          <div class="movform__acciones">
+            <button
+              type="button"
+              class="btn btn--secundario"
+              (click)="cantidad.set(null); stockFinal.set(null); motivo.set(''); referencia.set('')"
+              [disabled]="guardando()"
+            >
+              Limpiar formulario
+            </button>
+            <button
+              type="button"
+              class="btn"
+              [class.btn--exito]="modo === 'entrada'"
+              [class.btn--peligro]="modo === 'salida'"
+              [class.btn--primario]="modo === 'ajuste'"
+              (click)="registrar()"
+              [disabled]="guardando() || cargando()"
+            >
+              @if (guardando()) {
+                <span class="spinner"></span>
+                Registrando...
+              } @else {
+                <ng-icon name="lucideCheck" size="20" />
+                Registrar {{ titulo() }}
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel informativo -->
+  <div class="movform__lateral">
+    <div class="tarjeta">
+      <div class="tarjeta__cuerpo">
+        <h4 class="tarjeta__titulo">Como funciona</h4>
+        <ul class="movform__pasos">
+          @if (modo === 'entrada') {
+            <li class="movform__paso">
+              <span class="movform__paso-numero">1</span>
+              Seleccione el producto que recibe la mercaderia.
+            </li>
+            <li class="movform__paso">
+              <span class="movform__paso-numero">2</span>
+              Indique la cantidad de unidades que ingresan y, si desea, el precio de compra.
+            </li>
+            <li class="movform__paso">
+              <span class="movform__paso-numero">3</span>
+              El stock se actualiza y el movimiento queda registrado en la bitacora.
+            </li>
+          } @else if (modo === 'salida') {
+            <li class="movform__paso">
+              <span class="movform__paso-numero">1</span>
+              Seleccione el producto del que se descuenta mercaderia.
+            </li>
+            <li class="movform__paso">
+              <span class="movform__paso-numero">2</span>
+              Indique la cantidad a despachar. El sistema valida que haya stock disponible.
+            </li>
+            <li class="movform__paso">
+              <span class="movform__paso-numero">3</span>
+              Si no hay stock suficiente, la operacion se rechaza con un mensaje claro.
+            </li>
+          } @else {
+            <li class="movform__paso">
+              <span class="movform__paso-numero">1</span>
+              Seleccione el producto que fue contado fisicamente.
+            </li>
+            <li class="movform__paso">
+              <span class="movform__paso-numero">2</span>
+              Ingrese el stock final contado. El sistema calcula la diferencia.
+            </li>
+            <li class="movform__paso">
+              <span class="movform__paso-numero">3</span>
+              La diferencia queda auditada como ajuste positivo o negativo.
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

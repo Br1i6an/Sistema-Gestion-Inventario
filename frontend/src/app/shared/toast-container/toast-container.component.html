@@ -1,0 +1,43 @@
+<div class="toasts">
+  @for (notif of servicio.notificaciones(); track notif.id) {
+    <div
+      class="toast"
+      [class.toast--exito]="notif.tipo === 'exito'"
+      [class.toast--error]="notif.tipo === 'error'"
+      [class.toast--info]="notif.tipo === 'info'"
+      [class.toast--aviso]="notif.tipo === 'aviso'"
+      role="alert"
+    >
+      <span class="toast__icono">
+        @switch (notif.tipo) {
+          @case ('exito') {
+            <ng-icon name="lucideCheck" size="20" />
+          }
+          @case ('error') {
+            <ng-icon name="lucideCircleAlert" size="20" />
+          }
+          @case ('aviso') {
+            <ng-icon name="lucideTriangleAlert" size="20" />
+          }
+          @default {
+            <ng-icon name="lucideInfo" size="20" />
+          }
+        }
+      </span>
+
+      <div class="toast__datos">
+        <p class="toast__titulo">{{ notif.titulo }}</p>
+        <p class="toast__mensaje">{{ notif.mensaje }}</p>
+      </div>
+
+      <button
+        type="button"
+        class="toast__cerrar"
+        (click)="servicio.cerrar(notif.id)"
+        aria-label="Cerrar notificacion"
+      >
+        <ng-icon name="lucideX" size="16" />
+      </button>
+    </div>
+  }
+</div>

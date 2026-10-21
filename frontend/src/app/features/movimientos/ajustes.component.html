@@ -1,0 +1,43 @@
+<div class="movpag">
+  <div>
+    <h2 class="movpag__titulo">Ajuste de inventario</h2>
+    <p class="movpag__descripcion">
+      Corrija el stock de un producto tras un conteo fisico. La diferencia queda auditada.
+    </p>
+  </div>
+
+  <app-movimiento-form
+    modo="ajuste"
+    (onRegistrado)="ultimoMovimiento.set($event)"
+  />
+
+  @if (ultimoMovimiento(); as m) {
+    <div class="ultimo ultimo--ajuste">
+      <h4 class="ultimo__titulo">Ultimo ajuste registrado</h4>
+      <div class="ultimo__datos">
+        <div>
+          <p class="ultimo__dato-etiqueta">Producto</p>
+          <p class="ultimo__dato-valor">{{ m.productoNombre }}</p>
+        </div>
+        <div>
+          <p class="ultimo__dato-etiqueta">Diferencia</p>
+          <p class="ultimo__dato-valor numerico">
+            {{ m.stockResultante > m.stockAnterior ? '+' : '' }}{{ m.stockResultante - m.stockAnterior }}
+          </p>
+        </div>
+        <div>
+          <p class="ultimo__dato-etiqueta">Stock anterior</p>
+          <p class="ultimo__dato-valor numerico">{{ m.stockAnterior }}</p>
+        </div>
+        <div>
+          <p class="ultimo__dato-etiqueta">Stock resultante</p>
+          <p class="ultimo__dato-valor numerico">{{ m.stockResultante }}</p>
+        </div>
+        <div>
+          <p class="ultimo__dato-etiqueta">Tipo</p>
+          <p class="ultimo__dato-valor">{{ m.tipoDescripcion }}</p>
+        </div>
+      </div>
+    </div>
+  }
+</div>

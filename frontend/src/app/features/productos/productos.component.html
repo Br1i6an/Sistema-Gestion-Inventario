@@ -1,0 +1,294 @@
+<div class="prod">
+  <div class="prod__encabezado">
+    <div>
+      <h2 class="prod__titulo">Catalogo de productos</h2>
+      <p class="prod__descripcion">Alta, edicion y baja de productos del inventario</p>
+    </div>
+    <button type="button" class="btn btn--primario" (click)="abrirCrear()">
+      <ng-icon name="lucidePlus" size="20" />
+      Nuevo producto
+    </button>
+  </div>
+
+  <div class="filtros">
+    <div class="filtros__campo">
+      <label class="label" for="busqueda">Buscar</label>
+      <input
+        id="busqueda"
+        type="search"
+        class="input"
+        placeholder="Nombre o codigo..."
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+        (keyup.enter)="aplicarFiltros()"
+      />
+    </div>
+
+    <div class="filtros__campo">
+      <label class="label" for="categoria">Categoria</label>
+      <select
+        id="categoria"
+        class="input select"
+        [ngModel]="categoriaId()"
+        (ngModelChange)="categoriaId.set($event); aplicarFiltros()"
+      >
+        <option [ngValue]="null">Todas</option>
+        @for (c of categorias(); track c.id) {
+          <option [ngValue]="c.id">{{ c.nombre }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    @if (cargando()) {
+      <div class="centrado min-alto-72">
+        <span class="spinner spinner--oscuro"></span>
+      </div>
+    } @else if (productos().length === 0) {
+      <div class="vacio">
+        <ng-icon class="vacio__icono vacio__icono--gris" name="lucidePackage" size="40" strokeWidth="1.5" />
+        <p class="vacio__titulo">No hay productos registrados</p>
+        <button type="button" class="btn btn--primario mt-2" (click)="abrirCrear()">Crear el primero</button>
+      </div>
+    } @else {
+      <div class="tabla-envoltura">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Codigo</th>
+              <th>Producto</th>
+              <th>Categoria</th>
+              <th class="texto-derecha">Precio</th>
+              <th class="texto-derecha">Stock</th>
+              <th class="texto-centro">Estado</th>
+              <th class="texto-centro">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of productos(); track p.id) {
+              <tr [class.prod__inactivo]="!p.activo">
+                <td class="prod__codigo">{{ p.codigo }}</td>
+                <td>
+                  <p class="prod__nombre">{{ p.nombre }}</p>
+                  @if (p.descripcion) {
+                    <p class="prod__descripcion-corta">{{ p.descripcion }}</p>
+                  }
+                </td>
+                <td>{{ p.categoriaNombre }}</td>
+                <td class="texto-derecha numerico">{{ p.precioUnitario | number: '1.2-2' }}</td>
+                <td class="texto-derecha numerico">
+                  <strong>{{ p.stockActual }}</strong>
+                  <span class="tabla__stock-minimo">/ min {{ p.stockMinimo }}</span>
+                </td>
+                <td class="texto-centro">
+                  @if (!p.activo) {
+                    <span class="badge badge--neutro">Inactivo</span>
+                  } @else {
+                    <span [class]="claseEstado(p.estadoStock)">{{ p.estadoStock }}</span>
+                  }
+                </td>
+                <td>
+                  <div class="prod__acciones">
+                    <button
+                      type="button"
+                      class="prod__icono-btn prod__icono-btn--editar"
+                      (click)="abrirEditar(p)"
+                      title="Editar producto"
+                      aria-label="Editar producto"
+                    >
+                      <ng-icon name="lucidePencil" size="16" />
+                    </button>
+
+                    @if (p.activo) {
+                      <button
+                        type="button"
+                        class="prod__icono-btn prod__icono-btn--baja"
+                        (click)="solicitarBaja(p)"
+                        title="Dar de baja"
+                        aria-label="Dar de baja producto"
+                      >
+                        <ng-icon name="lucideTrash2" size="16" />
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <app-paginacion
+        [pagina]="pagina()"
+        [totalPaginas]="totalPaginas()"
+        [totalRegistros]="totalRegistros()"
+        [tamanoPagina]="tamanoPagina"
+        (cambioPagina)="cambiarPagina($event)"
+      />
+    }
+  </div>
+</div>
+
+@if (modalAbierto()) {
+  <div class="modal">
+    <div class="modal__velo" (click)="cerrarModal()"></div>
+
+    <div class="modal__caja" role="dialog" aria-modal="true">
+      <div class="tarjeta__encabezado">
+        <h3 class="tarjeta__titulo">
+          {{ modoEdicion() === 'crear' ? 'Nuevo producto' : 'Editar producto' }}
+        </h3>
+        <button
+          type="button"
+          class="modal__cerrar"
+          (click)="cerrarModal()"
+          aria-label="Cerrar"
+        >
+          <ng-icon name="lucideX" size="20" />
+        </button>
+      </div>
+
+      <div class="modal__cuerpo">
+        <div class="modal__grid">
+          <div class="modal__campo">
+            <label class="label" for="formCodigo">Codigo <span class="texto-rojo-600">*</span></label>
+            <input
+              id="formCodigo"
+              type="text"
+              maxlength="30"
+              class="input"
+              placeholder="Ej. ALM-004"
+              [ngModel]="form().codigo"
+              (ngModelChange)="actualizarForm('codigo', $event)"
+            />
+          </div>
+
+          <div class="modal__campo">
+            <label class="label" for="formNombre">Nombre <span class="texto-rojo-600">*</span></label>
+            <input
+              id="formNombre"
+              type="text"
+              maxlength="150"
+              class="input"
+              placeholder="Nombre del producto"
+              [ngModel]="form().nombre"
+              (ngModelChange)="actualizarForm('nombre', $event)"
+            />
+          </div>
+        </div>
+
+        <div class="modal__campo">
+          <label class="label" for="formDescripcion">Descripcion</label>
+          <textarea
+            id="formDescripcion"
+            rows="2"
+            maxlength="500"
+            class="input modal__textarea"
+            placeholder="Descripcion opcional"
+            [ngModel]="form().descripcion"
+            (ngModelChange)="actualizarForm('descripcion', $event)"
+          ></textarea>
+        </div>
+
+        <div class="modal__grid">
+          <div class="modal__campo">
+            <label class="label" for="formCategoria">Categoria <span class="texto-rojo-600">*</span></label>
+            <select
+              id="formCategoria"
+              class="input select"
+              [ngModel]="form().categoriaId"
+              (ngModelChange)="actualizarForm('categoriaId', +$event)"
+            >
+              <option [ngValue]="0">Seleccione...</option>
+              @for (c of categorias(); track c.id) {
+                <option [ngValue]="c.id">{{ c.nombre }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="modal__campo">
+            <label class="label" for="formPrecio">Precio unitario</label>
+            <input
+              id="formPrecio"
+              type="number"
+              min="0"
+              step="0.01"
+              class="input"
+              [ngModel]="form().precioUnitario"
+              (ngModelChange)="actualizarForm('precioUnitario', +$event)"
+            />
+          </div>
+        </div>
+
+        <div class="modal__grid">
+          <div class="modal__campo">
+            <label class="label" for="formStockMin">Stock minimo</label>
+            <input
+              id="formStockMin"
+              type="number"
+              min="0"
+              class="input"
+              [ngModel]="form().stockMinimo"
+              (ngModelChange)="actualizarForm('stockMinimo', +$event)"
+            />
+            <p class="modal__ayuda">Nivel a partir del cual se genera una alerta.</p>
+          </div>
+
+          @if (modoEdicion() === 'crear') {
+            <div class="modal__campo">
+              <label class="label" for="formStockInicial">Stock inicial</label>
+              <input
+                id="formStockInicial"
+                type="number"
+                min="0"
+                class="input"
+                [ngModel]="form().stockInicial"
+                (ngModelChange)="actualizarForm('stockInicial', +$event)"
+              />
+              <p class="modal__ayuda">Se registra como entrada inicial.</p>
+            </div>
+          } @else {
+            <div class="modal__campo">
+              <label class="label" for="formActivo">Estado</label>
+              <select
+                id="formActivo"
+                class="input select"
+                [ngModel]="form().activo"
+                (ngModelChange)="actualizarForm('activo', $event === 'true' || $event === true)"
+              >
+                <option [ngValue]="true">Activo</option>
+                <option [ngValue]="false">Inactivo</option>
+              </select>
+              <p class="modal__ayuda">El stock solo cambia por movimientos.</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="modal__pie">
+        <button type="button" class="btn btn--secundario" (click)="cerrarModal()" [disabled]="guardando()">
+          Cancelar
+        </button>
+        <button type="button" class="btn btn--primario" (click)="guardar()" [disabled]="guardando()">
+          @if (guardando()) {
+            <span class="spinner"></span>
+            Guardando...
+          } @else {
+            <ng-icon name="lucideCheck" size="20" />
+            {{ modoEdicion() === 'crear' ? 'Crear producto' : 'Guardar cambios' }}
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<app-confirmar
+  [visible]="confirmarBaja()"
+  titulo="Dar de baja el producto"
+  [mensaje]="'Esta accion marcara el producto como inactivo. No podra registrar movimientos sobre el, pero su historico se conserva. Confirma la operacion?'"
+  textoConfirmar="Dar de baja"
+  [peligroso]="true"
+  (aceptado)="confirmarDarDeBaja()"
+/>

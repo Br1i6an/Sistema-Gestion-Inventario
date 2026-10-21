@@ -1,0 +1,173 @@
+
+.prod {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-5);
+}
+
+.prod__encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--esp-3);
+}
+
+.prod__titulo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gris-800);
+}
+
+.prod__descripcion {
+  font-size: 14px;
+  color: var(--gris-500);
+}
+
+.prod__codigo {
+  font-family: ui-monospace, "Cascadia Mono", "Roboto Mono", Consolas, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gris-600);
+}
+
+.prod__nombre {
+  font-weight: 500;
+  color: var(--gris-800);
+}
+
+.prod__descripcion-corta {
+  max-width: 320px;
+  overflow: hidden;
+  font-size: 12px;
+  color: var(--gris-500);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prod__inactivo {
+  opacity: 0.5;
+}
+
+/* Botones de accion en la fila */
+
+.prod__acciones {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.prod__icono-btn {
+  padding: 8px;
+  color: var(--gris-500);
+  border-radius: var(--radio);
+  transition: background-color var(--transicion), color var(--transicion);
+}
+
+.prod__icono-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.prod__icono-btn--editar:hover {
+  color: var(--marca-600);
+  background-color: var(--gris-100);
+}
+
+.prod__icono-btn--baja:hover {
+  color: #e11d48;
+  background-color: #ffe4e6;
+}
+
+/* Modal */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--esp-4);
+  overflow-y: auto;
+}
+
+.modal__velo {
+  position: fixed;
+  inset: 0;
+  background-color: rgb(15 23 42 / 0.5);
+}
+
+.modal__caja {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 640px;
+  background-color: #fff;
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-xl);
+}
+
+.modal__cerrar {
+  padding: 6px;
+  color: var(--gris-400);
+  border-radius: var(--radio);
+  transition: background-color var(--transicion), color var(--transicion);
+}
+
+.modal__cerrar:hover {
+  color: var(--gris-600);
+  background-color: var(--gris-100);
+}
+
+.modal__cerrar svg {
+  width: 20px;
+  height: 20px;
+}
+
+.modal__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-4);
+  padding: var(--esp-5);
+}
+
+.modal__pie {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--esp-2);
+  padding: var(--esp-4) var(--esp-5);
+  border-top: 1px solid var(--gris-200);
+}
+
+.modal__campo {
+  min-width: 0;
+}
+
+.modal__textarea {
+  resize: none;
+}
+
+.modal__grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: var(--esp-4);
+}
+
+.modal__ayuda {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--gris-500);
+}
+
+@media (min-width: 640px) {
+  .modal__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .modal__pie {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}

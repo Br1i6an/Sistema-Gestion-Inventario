@@ -1,0 +1,39 @@
+#  .NET / Visual Studio
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+.vs/
+.vscode/
+*.swp
+TestResults/
+coverage/
+
+#  Node / Angular
+node_modules/
+dist/
+.angular/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+#  Bases de datos
+*.sql.bak
+*.dump
+pgdata/
+
+#  Configuracion local
+appsettings.Local.json
+appsettings.*.Development.json
+.env
+.env.local
+
+# Comprimido
+*.zip
+
+#  Sistema operativo / IDE
+Thumbs.db
+.DS_Store
+desktop.ini
+*.log

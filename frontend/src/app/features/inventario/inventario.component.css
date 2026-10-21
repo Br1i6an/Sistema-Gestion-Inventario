@@ -1,0 +1,138 @@
+
+.inv {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-5);
+}
+
+.inv__titulo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gris-800);
+}
+
+.inv__descripcion {
+  font-size: 14px;
+  color: var(--gris-500);
+}
+
+/* Tabla */
+
+.tabla__codigo {
+  font-family: ui-monospace, "Cascadia Mono", "Roboto Mono", Consolas, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gris-600);
+}
+
+.tabla__nombre {
+  font-weight: 500;
+  color: var(--gris-800);
+}
+
+.tabla__descripcion {
+  max-width: 320px;
+  overflow: hidden;
+  font-size: 12px;
+  color: var(--gris-500);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tabla__stock-minimo {
+  font-size: 12px;
+  color: var(--gris-400);
+}
+
+.tabla__orden {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tabla__orden:hover {
+  color: var(--gris-700);
+}
+
+.tabla__orden-flecha {
+  color: var(--marca-600);
+}
+
+/* Vista de tarjetas (movil) */
+
+.inv__tarjetas {
+  display: flex;
+  flex-direction: column;
+}
+
+.inv__tarjeta {
+  padding: var(--esp-4);
+  border-bottom: 1px solid var(--gris-100);
+}
+
+.inv__tarjeta:last-child {
+  border-bottom: none;
+}
+
+.inv__tarjeta-encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--esp-3);
+}
+
+.inv__tarjeta-codigo {
+  font-family: ui-monospace, "Cascadia Mono", "Roboto Mono", Consolas, monospace;
+  font-size: 12px;
+  color: var(--gris-500);
+}
+
+.inv__tarjeta-nombre {
+  font-weight: 500;
+  color: var(--gris-800);
+}
+
+.inv__tarjeta-categoria {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--gris-500);
+}
+
+.inv__tarjeta-datos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--esp-2);
+  margin-top: var(--esp-3);
+}
+
+.inv__dato {
+  padding: 8px;
+  text-align: center;
+  background-color: var(--gris-50);
+  border-radius: var(--radio);
+}
+
+.inv__dato-etiqueta {
+  font-size: 12px;
+  color: var(--gris-500);
+}
+
+.inv__dato-valor {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gris-800);
+}
+
+/* Responsive */
+
+@media (min-width: 768px) {
+  .filtros {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .filtros {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

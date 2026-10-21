@@ -1,0 +1,56 @@
+
+.mov {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-5);
+}
+
+.mov__titulo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gris-800);
+}
+
+.mov__descripcion {
+  font-size: 14px;
+  color: var(--gris-500);
+}
+
+.mov__producto {
+  font-weight: 500;
+  color: var(--gris-800);
+}
+
+.mov__codigo {
+  font-family: ui-monospace, "Cascadia Mono", "Roboto Mono", Consolas, monospace;
+  font-size: 12px;
+  color: var(--gris-500);
+}
+
+.mov__motivo {
+  max-width: 224px;
+  overflow: hidden;
+  font-size: 14px;
+  color: var(--gris-600);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mov__referencia {
+  display: block;
+  font-family: ui-monospace, "Cascadia Mono", "Roboto Mono", Consolas, monospace;
+  font-size: 12px;
+  color: var(--gris-400);
+}
+
+.mov__fecha {
+  font-size: 12px;
+  color: var(--gris-500);
+  white-space: nowrap;
+}
+
+.mov__usuario {
+  font-size: 14px;
+  color: var(--gris-600);
+  white-space: nowrap;
+}

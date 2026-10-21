@@ -1,0 +1,94 @@
+
+.conf {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--esp-4);
+}
+
+.conf__velo {
+  position: absolute;
+  inset: 0;
+  background-color: rgb(15 23 42 / 0.5);
+}
+
+.conf__caja {
+  position: relative;
+  width: 100%;
+  max-width: 448px;
+  padding: var(--esp-6);
+  background-color: #fff;
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-xl);
+}
+
+.conf__encabezado {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-4);
+}
+
+.conf__icono {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.conf__icono svg {
+  width: 24px;
+  height: 24px;
+}
+
+.conf__icono--peligro {
+  background-color: var(--peligro-fondo);
+}
+
+.conf__icono--peligro svg {
+  color: #e11d48;
+}
+
+.conf__icono--normal {
+  background-color: var(--marca-100);
+}
+
+.conf__icono--normal svg {
+  color: var(--marca-600);
+}
+
+.conf__datos {
+  flex: 1;
+  min-width: 0;
+}
+
+.conf__titulo {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gris-900);
+}
+
+.conf__mensaje {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--gris-600);
+}
+
+.conf__acciones {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--esp-2);
+  margin-top: var(--esp-6);
+}
+
+@media (min-width: 640px) {
+  .conf__acciones {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}

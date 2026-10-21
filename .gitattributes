@@ -1,0 +1,17 @@
+# Normaliza los saltos de linea: LF en el repositorio, nativo al clonar.
+* text=auto eol=lf
+
+# Los scripts de PowerShell y los archivos de proyecto de Windows usan CRLF.
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.sln text eol=crlf
+*.csproj text eol=crlf
+
+# Los archivos binarios no se tocan.
+*.png binary
+*.ico binary
+*.jpg binary
+*.gif binary
+*.woff binary
+*.woff2 binary

@@ -1,0 +1,41 @@
+<div class="movpag">
+  <div>
+    <h2 class="movpag__titulo">Salida de mercaderia</h2>
+    <p class="movpag__descripcion">
+      Registre el despacho de productos desde el inventario del almacen
+    </p>
+  </div>
+
+  <app-movimiento-form
+    modo="salida"
+    (onRegistrado)="ultimoMovimiento.set($event)"
+  />
+
+  @if (ultimoMovimiento(); as m) {
+    <div class="ultimo ultimo--salida">
+      <h4 class="ultimo__titulo">Ultimo movimiento registrado</h4>
+      <div class="ultimo__datos">
+        <div>
+          <p class="ultimo__dato-etiqueta">Producto</p>
+          <p class="ultimo__dato-valor">{{ m.productoNombre }}</p>
+        </div>
+        <div>
+          <p class="ultimo__dato-etiqueta">Cantidad</p>
+          <p class="ultimo__dato-valor numerico">-{{ m.cantidad }}</p>
+        </div>
+        <div>
+          <p class="ultimo__dato-etiqueta">Stock anterior</p>
+          <p class="ultimo__dato-valor numerico">{{ m.stockAnterior }}</p>
+        </div>
+        <div>
+          <p class="ultimo__dato-etiqueta">Stock resultante</p>
+          <p class="ultimo__dato-valor numerico">{{ m.stockResultante }}</p>
+        </div>
+        <div>
+          <p class="ultimo__dato-etiqueta">Valor total</p>
+          <p class="ultimo__dato-valor numerico">{{ m.valorTotal | number: '1.2-2' }}</p>
+        </div>
+      </div>
+    </div>
+  }
+</div>
